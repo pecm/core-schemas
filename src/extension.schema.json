@@ -1,0 +1,384 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/php-ext-com/build-engine/blob/main/src/Schema/extension.json",
+  "title": "Extension Definition",
+  "description": "PHP Extension dependency and build details",
+  "type": "object",
+  "properties": {
+    "deps": {
+      "title": "Dependencies",
+      "description": "Dependencies grouped by OS",
+      "type": "object",
+      "propertyNames": {
+        "title": "Operating System",
+        "description": "OS name/codename as used in Docker Hub",
+        "type": "string",
+        "minLength": 1,
+        "examples": [
+          "alpine",
+          "buster"
+        ]
+      },
+      "patternProperties": {
+        "[a-z]+": {
+          "title": "OS Dependency Definition",
+          "description": "A set of dependencies that are required to build the extension",
+          "type": "object",
+          "properties": {
+            "disabled": {
+              "title": "OS Build Flag",
+              "description": "Disables OS support",
+              "type": "boolean",
+              "default": false
+            },
+            "env": {
+              "title": "Environment Variables",
+              "description": "List of environment variables",
+              "type": "object",
+              "propertyNames": {
+                "title": "Variable Name",
+                "description": "Name by which the variable is recognized by the OS",
+                "type": "string",
+                "minLength": 1,
+                "examples": [
+                  "DEBIAN_FRONTEND"
+                ]
+              },
+              "minProperties": 1,
+              "additionalProperties": {
+                "title": "Variable Value",
+                "description": "Variable value set in the OS",
+                "type": "string",
+                "examples": [
+                  "noninteractive"
+                ]
+              }
+            },
+            "files": {
+              "title": "File List",
+              "description": "List of files to be downloaded",
+              "type": "array",
+              "items": {
+                "title": "File",
+                "description": "An ordinary file that will be downloaded and placed somewhere in the file system",
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "title": "File URL",
+                    "description": "URL to download file from",
+                    "type": "string",
+                    "format": "uri",
+                    "examples": [
+                      "https://packages.microsoft.com/config/debian/10/prod.list"
+                    ]
+                  },
+                  "name": {
+                    "title": "File Path",
+                    "description": "Path to save file after download",
+                    "type": "string",
+                    "minLength": 1,
+                    "examples": [
+                      "/etc/apt/sources.list.d/mssql-release.list"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "keys": {
+              "title": "Key List",
+              "description": "List of gpg keys used to sign packages",
+              "type": "array",
+              "items": {
+                "title": "Key URL",
+                "description": "URL to download key from",
+                "type": "string",
+                "format": "uri",
+                "examples": [
+                  "https://packages.microsoft.com/keys/microsoft.asc"
+                ]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "sources": {
+              "title": "Source List",
+              "description": "List of OS package sources",
+              "type": "array",
+              "items": {
+                "title": "Package Source URL",
+                "description": "URL to a Package Source mirror",
+                "type": "string",
+                "format": "uri",
+                "examples": [
+                  ""
+                ]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "untrusted-packages": {
+              "title": "Untrusted Package List",
+              "description": "List of untrusted OS packages to be installed",
+              "type": "array",
+              "items": {
+                "title": "Package Name",
+                "description": "The name/path to an Untrusted OS Software Package",
+                "type": "string",
+                "minLength": 1,
+                "examples": [
+                  "/tmp/mssql-tools_17.6.1.1-1_amd64.apk"
+                ]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "packages": {
+              "title": "Package List",
+              "description": "List of OS packages to be installed",
+              "type": "array",
+              "items": {
+                "title": "Package name",
+                "description": "The name to an OS Software Package",
+                "type": "string",
+                "minLength": 1,
+                "examples": [
+                  "mssql-tools"
+                ]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "libraries": {
+              "title": "Library List",
+              "description": "List of libraries to be built",
+              "type": "array",
+              "items": {
+                "title": "Library",
+                "description": "Library build details",
+                "type": "object",
+                "properties": {
+                  "flag": {
+                    "title": "Build Flag",
+                    "description": "Build flag passed to ./configure command",
+                    "type": "string",
+                    "minLength": 1,
+                    "examples": [
+                      ""
+                    ]
+                  },
+                  "path": {
+                    "title": "Build Path",
+                    "description": "Path to extension's 'config.m4' file",
+                    "type": "string",
+                    "minLength": 1,
+                    "examples": [
+                      ""
+                    ]
+                  },
+                  "type": {
+                    "title": "VCS Type",
+                    "description": "VCS software used by the repository",
+                    "type": "string",
+                    "enum": [
+                      "git",
+                      "svn"
+                    ]
+                  },
+                  "url": {
+                    "title": "Repository URL",
+                    "description": "URL to clone source code from",
+                    "type": "string",
+                    "format": "uri",
+                    "examples": [
+                      ""
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "url"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "core-extensions": {
+              "title": "Core Extension List",
+              "description": "List of core PHP Extensions to be installed",
+              "type": "array",
+              "items": {
+                "title": "Extension Name",
+                "description": "Name of an extension that is bundled with PHP",
+                "type": "string",
+                "minLength": 1,
+                "examples": [
+                  "pdo"
+                ]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "extensions": {
+              "title": "Extension List",
+              "description": "List of non-core PHP Extensions to be installed",
+              "type": "array",
+              "items": {
+                "title": "Extension Name",
+                "description": "Name of an extension that is installed with Pecl or is built from Source",
+                "type": "string",
+                "minLength": 1,
+                "examples": [
+                  "sqlsrv"
+                ]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "pecl": {
+      "title": "Pecl",
+      "description": "Pecl information",
+      "type": "object",
+      "properties": {
+        "available": {
+          "title": "Pecl Availability",
+          "description": "If extension is available through Pecl",
+          "type": "boolean",
+          "default": true
+        },
+        "state": {
+          "title": "Version Stability",
+          "description": "Extension stability state",
+          "type": "string",
+          "default": "stable",
+          "enum": [
+            "stable",
+            "beta",
+            "alpha"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "build": {
+      "title": "Build Details",
+      "description": "Extension source code and build information",
+      "type": "object",
+      "properties": {
+        "flag": {
+          "title": "Build Flag",
+          "description": "Build flag passed to ./configure command",
+          "type": "string",
+          "minLength": 1,
+          "examples": [
+            "--with-pdo_sqlsrv"
+          ]
+        },
+        "path": {
+          "title": "Build Path",
+          "description": "Path to extension's 'config.m4' file",
+          "type": "string",
+          "minLength": 1,
+          "examples": [
+            "source/pdo_sqlsrv"
+          ]
+        },
+        "type": {
+          "title": "VCS Type",
+          "description": "VCS software used by the repository",
+          "type": "string",
+          "enum": [
+            "git",
+            "svn"
+          ]
+        },
+        "url": {
+          "title": "Repository URL",
+          "description": "URL to clone source code from",
+          "type": "string",
+          "format": "uri",
+          "examples": [
+            "https://github.com/Microsoft/msphpsql"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "requirement": {
+      "title": "PHP Requirements",
+      "description": "PHP Versions and Thread-Safe support",
+      "type": "object",
+      "properties": {
+        "min": {
+          "title": "PHP Minimum Version",
+          "description": "PHP oldest supported version",
+          "type": "string",
+          "default": "0.0.0",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+          "examples": [
+            "7.2.0"
+          ]
+        },
+        "max": {
+          "title": "PHP Maximum Version",
+          "description": "PHP newest supported version",
+          "type": "string",
+          "default": "99.99.99",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+          "examples": [
+            "8.0.99"
+          ]
+        },
+        "zts": {
+          "title": "PHP ZTS",
+          "description": "PHP Zend Thread-Safe support",
+          "type": "string",
+          "default": "neutral",
+          "enum": [
+            "neutral",
+            "required",
+            "unsupported"
+          ]
+        },
+        "nts": {
+          "title": "PHP NTS",
+          "description": "PHP Non Thread-Safe support",
+          "type": "string",
+          "default": "neutral",
+          "enum": [
+            "neutral",
+            "required",
+            "unsupported"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "title": "Extension Summary",
+      "description": "A brief description about the extension",
+      "type": "string",
+      "minLength": 1,
+      "examples": [
+        "Microsoft Drivers for PHP for SQL Server (PDO_SQLSRV)"
+      ]
+    }
+  },
+  "required": [
+    "build",
+    "summary"
+  ],
+  "additionalProperties": false
+}
